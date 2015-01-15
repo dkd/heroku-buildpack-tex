@@ -24,7 +24,6 @@ source $BIN_DIR/utils
 
 # Prepare the various paths
 mkdir -p $TEXLIVE_HOME
-mkdir -p $TEXLIVE_CACHE
 mkdir -p $TOOL_BIN 
 mkdir -p $TOOL_CACHE
 mkdir -p `dirname $PROFILE_D`
@@ -52,9 +51,6 @@ if [ ! -f $TOOL_BIN/wget ]; then
     cp $CACHE_DIR/.tools/wget/bin/wget $TOOL_BIN/
 fi
 
-if [ "$(ls -A $TEXLIVE_CACHE)" ]; then
-    cp -R $TEXLIVE_CACHE/* $TEXLIVE_HOME
-fi
 
 build-step "getting install-tl"
 curl $TEXLIVE_INSTALLER_URL -L -s -o - | tar --strip-components=1 -xzf - -C $TEXLIVE_HOME
@@ -95,12 +91,6 @@ tlmgr update --all
 
 build-step "cleanup"
 rm -rf $TEXLIVE_HOME/texmf-dist/doc
-
-# Make sure the cache is empty
-rm -rf $TEXLIVE_CACHE/*
-
-# Store a copy of it in the cache so it doesn't have to be fetched again
-cp -R $TEXLIVE_HOME/* $TEXLIVE_CACHE/
 
 # Check for an essential binary to make sure it's installed
 if [ ! `which pdflatex` ]; then
